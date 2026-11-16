@@ -106,6 +106,7 @@ class GradesWindow(QMainWindow):
         for row, (student_id, grade) in enumerate(zip(ids, original_grades)):
             self.grades_table.item(row, 0).setText(str(student_id))
             self.grades_table.item(row, 1).setText(str(grade))
+            self.grades_table.item(row, 2).setText(str(grade))
 
     def update_file(self) -> None:
         pass
