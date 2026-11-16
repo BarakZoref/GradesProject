@@ -26,7 +26,7 @@ class GradesWindow(QMainWindow):
         self.student_ids = []
         self.original_grades = []
         self.corrected_grades = []
-        self.selected_file = ''
+        self.selected_file = 'grades.csv'
 
         self.setWindowTitle("Grades")
 
@@ -87,8 +87,16 @@ class GradesWindow(QMainWindow):
 
         self.setCentralWidget(central_widget)
 
-    def load_grades(self) -> None:
-        pass
+    def load_grades(self):
+        with open(self.selected_file, 'r') as f:
+            next(f) # מקדם בשורה אחת
+            for line in f:
+                parts = line.split(',')
+                self.student_ids.append(int(parts[0]))
+                self.original_grades.append(int(parts[1]))
+                self.corrected_grades.append(int(parts[1]))
+        self.set_grades(self.student_ids, self.original_grades)
+
 
     def set_grades(
         self, ids: Sequence[int | float], original_grades: Sequence[int | float]
