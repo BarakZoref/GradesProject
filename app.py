@@ -46,6 +46,7 @@ class GradesWindow(QMainWindow):
 
         self.amount_input = QSpinBox()
         actions_layout.addWidget(self.amount_input)
+        self.amount_input.editingFinished.connect(self.amount_to_add_changed)
 
         self.update_button = QPushButton("Update File")
         self.update_button.clicked.connect(self.update_file)
@@ -87,6 +88,15 @@ class GradesWindow(QMainWindow):
         main_layout.addWidget(self.grades_table)
 
         self.setCentralWidget(central_widget)
+
+    def amount_to_add_changed(self):
+        for row in range(len(self.corrected_grades)):
+            self.corrected_grades[row]+=self.amount_input.value()
+            if self.corrected_grades[row]>100:
+                self.grades_table.item(row, 2).setText(str(100))
+            else:
+                self.grades_table.item(row, 2).setText(str(self.corrected_grades[row]))
+            
 
     def load_grades(self):
         selected_file, _ = QFileDialog.getOpenFileName(
