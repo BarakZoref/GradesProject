@@ -6,6 +6,7 @@ from PySide6.QtWidgets import (
     QHeaderView,
     QHBoxLayout,
     QLabel,
+    QFileDialog,
     QMainWindow,
     QPushButton,
     QSpinBox,
@@ -88,6 +89,16 @@ class GradesWindow(QMainWindow):
         self.setCentralWidget(central_widget)
 
     def load_grades(self):
+        selected_file, _ = QFileDialog.getOpenFileName(
+            self,
+            "Select Grades File",
+            "",
+            "CSV files (*.csv);;All files (*)",
+        )
+        if not selected_file:
+            return
+
+        self.selected_file = selected_file
         with open(self.selected_file, 'r') as f:
             next(f) # מקדם בשורה אחת
             for line in f:
