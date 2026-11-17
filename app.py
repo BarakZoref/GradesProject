@@ -93,9 +93,8 @@ class GradesWindow(QMainWindow):
         for row in range(len(self.corrected_grades)):
             self.corrected_grades[row]+=self.amount_input.value()
             if self.corrected_grades[row]>100:
-                self.grades_table.item(row, 2).setText(str(100))
-            else:
-                self.grades_table.item(row, 2).setText(str(self.corrected_grades[row]))
+                self.corrected_grades[row] = 100
+            self.set_grades()
             
 
     def load_grades(self):
@@ -116,15 +115,13 @@ class GradesWindow(QMainWindow):
                 self.student_ids.append(int(parts[0]))
                 self.original_grades.append(int(parts[1]))
                 self.corrected_grades.append(int(parts[1]))
-        self.set_grades(self.student_ids, self.original_grades)
+        self.set_grades()
 
 
-    def set_grades(
-        self, ids: Sequence[int | float], original_grades: Sequence[int | float]
-    ) -> None:
-        if len(ids) != len(original_grades):
+    def set_grades(self) -> None:
+        if len(self.student_ids) != len(self.original_grades):
             raise ValueError("IDs and original grades must have the same number of entries.")
-        if len(ids) > self.MAX_ROWS:
+        if len(self.student_ids) > self.MAX_ROWS:
             raise ValueError(f"At most {self.MAX_ROWS} grade entries can be displayed.")
 
         for row in range(self.MAX_ROWS):
@@ -132,10 +129,10 @@ class GradesWindow(QMainWindow):
             self.grades_table.item(row, 1).setText("")
             self.grades_table.item(row, 2).setText("")
 
-        for row, (student_id, grade) in enumerate(zip(ids, original_grades)):
+        for row, (student_id, grade, corrected_grade) in enumerate(zip(self.student_ids, self.original_grades, self.corrected_grades)):
             self.grades_table.item(row, 0).setText(str(student_id))
             self.grades_table.item(row, 1).setText(str(grade))
-            self.grades_table.item(row, 2).setText(str(grade))
+            self.grades_table.item(row, 2).setText(str(corrected_grade))
 
     def update_file(self) -> None:
         pass
