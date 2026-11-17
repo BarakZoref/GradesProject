@@ -1,0 +1,112 @@
+QMainWindow#gradesWindow {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #0f172a,
+        stop:0.55 #111827,
+        stop:1 #0b1120);
+    color: #e2e8f0;
+}
+
+QWidget#mainContainer {
+    background: transparent;
+}
+
+QLabel {
+    color: #e2e8f0;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+QPushButton {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #38bdf8,
+        stop:1 #2563eb);
+    border: none;
+    border-radius: 10px;
+    color: #f8fafc;
+    font-size: 13px;
+    font-weight: 700;
+    min-height: 38px;
+    padding: 8px 16px;
+}
+
+QPushButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #67e8f9,
+        stop:1 #3b82f6);
+}
+
+QPushButton:pressed {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #0ea5e9,
+        stop:1 #1d4ed8);
+}
+
+QSpinBox {
+    background-color: #0f172a;
+    color: #f8fafc;
+    border: 1px solid #334155;
+    border-radius: 10px;
+    padding: 6px 10px;
+    min-height: 34px;
+    selection-background-color: #38bdf8;
+}
+
+QTableWidget {
+    background-color: rgba(15, 23, 42, 0.9);
+    border: 1px solid #334155;
+    border-radius: 12px;
+    alternate-background-color: #0b1220;
+    gridline-color: #334155;
+    selection-background-color: rgba(56, 189, 248, 0.35);
+    selection-color: #f8fafc;
+}
+
+QTableWidget::item {
+    color: #e2e8f0;
+    padding: 8px 6px;
+    border-bottom: 1px solid #1e293b;
+}
+
+QTableWidget QScrollBar:vertical {
+    background: #020202;
+    width: 12px;
+    margin: 4px 3px;
+    border-radius: 6px;
+}
+
+QTableWidget QScrollBar::add-page:vertical,
+QTableWidget QScrollBar::sub-page:vertical {
+    background: #334155;
+}
+
+QTableWidget QScrollBar::handle:vertical {
+    background: #ffffff;
+    min-height: 28px;
+    border-radius: 5px;
+}
+
+QTableWidget QScrollBar::handle:vertical:hover {
+    background: #e2e8f0;
+}
+
+QTableWidget QScrollBar::add-line:vertical,
+QTableWidget QScrollBar::sub-line:vertical {
+    height: 0;
+}
+
+QHeaderView::section {
+    background-color: #1e293b;
+    color: #f8fafc;
+    font-weight: 700;
+    padding: 10px 6px;
+    border: 1px solid #334155;
+}
+
+QTableCornerButton::section {
+    background-color: #1e293b;
+    border: 1px solid #334155;
+}
+
+QVBoxLayout, QHBoxLayout {
+    spacing: 12px;
+}

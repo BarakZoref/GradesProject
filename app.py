@@ -1,11 +1,11 @@
 from collections.abc import Sequence
+from pathlib import Path
 
 from PySide6.QtCore import Qt, Signal, QUrl
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import (
     QApplication,
     QHeaderView,
-    QHBoxLayout,
     QLabel,
     QFileDialog,
     QMainWindow,
@@ -35,6 +35,10 @@ class GradesWindow(QMainWindow):
     def __init__(self) -> None:
         super().__init__()
 
+        self.setObjectName("gradesWindow")
+        self.resize(550, 620)
+        self.setMinimumHeight(520)
+
         self.student_ids = []
         self.original_grades = []
         self.corrected_grades = []
@@ -44,20 +48,28 @@ class GradesWindow(QMainWindow):
         self.setWindowTitle("Grades")
 
         central_widget = QWidget(self)
+        central_widget.setObjectName("mainContainer")
         main_layout = QVBoxLayout(central_widget)
-        controls_layout = QHBoxLayout()
+        main_layout.setContentsMargins(14, 14, 14, 14)
+        controls_widget = QWidget(central_widget)
+        controls_widget.setFixedWidth(240)
+        controls_layout = QVBoxLayout(controls_widget)
 
         self.load_button = QPushButton("Load Grades")
         self.load_button.clicked.connect(self.load_grades)
-        controls_layout.addWidget(self.load_button, alignment=Qt.AlignmentFlag.AlignTop)
-
-        controls_layout.addStretch()
+        controls_layout.addWidget(self.load_button)
 
         actions_layout = QVBoxLayout()
-        actions_layout.addWidget(QLabel("Amount of grade to be added:"))
+        amount_label = QLabel("Amount of grade to be added:")
+        amount_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        actions_layout.addWidget(amount_label)
 
         self.amount_input = EnterAwareSpinBox()
-        actions_layout.addWidget(self.amount_input)
+        self.amount_input.setRange(0,100)
+        self.amount_input.setFixedWidth(self.amount_input.sizeHint().width())
+        actions_layout.addWidget(
+            self.amount_input, alignment=Qt.AlignmentFlag.AlignHCenter
+        )
         self.amount_input.enterPressed.connect(self.amount_to_add_changed)
 
         self.update_button = QPushButton("Update File")
@@ -69,14 +81,17 @@ class GradesWindow(QMainWindow):
         actions_layout.addWidget(self.about_button)
 
         controls_layout.addLayout(actions_layout)
-        main_layout.addLayout(controls_layout)
+        main_layout.addWidget(
+            controls_widget, alignment=Qt.AlignmentFlag.AlignHCenter
+        )
 
         self.grades_table = QTableWidget(self.MAX_ROWS, 3)
         self.grades_table.setHorizontalHeaderLabels(
             ["ID", "Original Grades", "Corrected Grades"]
         )
+        self.grades_table.setAlternatingRowColors(True)
         self.grades_table.verticalHeader().hide()
-        self.grades_table.verticalHeader().setDefaultSectionSize(28)
+        self.grades_table.verticalHeader().setDefaultSectionSize(32)
         self.grades_table.setFixedHeight(
             self.grades_table.horizontalHeader().sizeHint().height()
             + self.VISIBLE_ROWS * self.grades_table.verticalHeader().defaultSectionSize()
@@ -84,22 +99,37 @@ class GradesWindow(QMainWindow):
         )
 
         for row in range(self.MAX_ROWS):
-            self.grades_table.setItem(row, 0, QTableWidgetItem())
-            self.grades_table.setItem(row, 1, QTableWidgetItem())
-            self.grades_table.setItem(row, 2, QTableWidgetItem())
+            for column in range(3):
+                item = QTableWidgetItem()
+                item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+                self.grades_table.setItem(row, column, item)
 
+        self.grades_table.setColumnWidth(0, 110)
+        self.grades_table.setColumnWidth(1, 180)
+        self.grades_table.setColumnWidth(2, 180)
         self.grades_table.horizontalHeader().setSectionResizeMode(
-            0, QHeaderView.ResizeMode.ResizeToContents
+            0, QHeaderView.ResizeMode.Fixed
         )
         self.grades_table.horizontalHeader().setSectionResizeMode(
-            1, QHeaderView.ResizeMode.Stretch
+            1, QHeaderView.ResizeMode.Fixed
         )
         self.grades_table.horizontalHeader().setSectionResizeMode(
-            2, QHeaderView.ResizeMode.Stretch
+            2, QHeaderView.ResizeMode.Fixed
         )
-        main_layout.addWidget(self.grades_table)
+        self.grades_table.horizontalHeader().setStretchLastSection(False)
+        table_width = sum(
+            self.grades_table.columnWidth(column) for column in range(3)
+        )
+        table_width += (
+            2 * self.grades_table.frameWidth()
+            + self.grades_table.verticalScrollBar().sizeHint().width()
+        )
+        self.grades_table.setFixedWidth(table_width)
+        main_layout.addWidget(self.grades_table, alignment=Qt.AlignmentFlag.AlignLeft)
 
         self.setCentralWidget(central_widget)
+        margins = main_layout.contentsMargins()
+        self.setFixedWidth(table_width + margins.left() + margins.right())
 
     def amount_to_add_changed(self):
         for row in range(len(self.corrected_grades)):
@@ -161,8 +191,14 @@ class GradesWindow(QMainWindow):
         self.about_window.show()
 
 
+def load_qss() -> str:
+    qss_path = Path(__file__).resolve().parent / "styles.qss"
+    return qss_path.read_text(encoding="utf-8")
+
+
 if __name__ == "__main__":
     app = QApplication([])
+    app.setStyleSheet(load_qss())
     window = GradesWindow()
     window.show()
     app.exec()
