@@ -1,6 +1,7 @@
 from collections.abc import Sequence
 
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal, QUrl
+from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import (
     QApplication,
     QHeaderView,
@@ -17,6 +18,15 @@ from PySide6.QtWidgets import (
 )
 
 
+class EnterAwareSpinBox(QSpinBox):
+    enterPressed = Signal()
+
+    def keyPressEvent(self, event) -> None:
+        super().keyPressEvent(event)
+        if event.key() in (Qt.Key.Key_Return, Qt.Key.Key_Enter):
+            self.enterPressed.emit()
+
+
 class GradesWindow(QMainWindow):
     MAX_ROWS = 50
     VISIBLE_ROWS = 10
@@ -27,7 +37,7 @@ class GradesWindow(QMainWindow):
         self.student_ids = []
         self.original_grades = []
         self.corrected_grades = []
-        self.selected_file = 'grades.csv'
+        self.selected_file = ''
 
         self.setWindowTitle("Grades")
 
@@ -44,9 +54,9 @@ class GradesWindow(QMainWindow):
         actions_layout = QVBoxLayout()
         actions_layout.addWidget(QLabel("Amount of grade to be added:"))
 
-        self.amount_input = QSpinBox()
+        self.amount_input = EnterAwareSpinBox()
         actions_layout.addWidget(self.amount_input)
-        self.amount_input.editingFinished.connect(self.amount_to_add_changed)
+        self.amount_input.enterPressed.connect(self.amount_to_add_changed)
 
         self.update_button = QPushButton("Update File")
         self.update_button.clicked.connect(self.update_file)
@@ -91,11 +101,10 @@ class GradesWindow(QMainWindow):
 
     def amount_to_add_changed(self):
         for row in range(len(self.corrected_grades)):
-            self.corrected_grades[row]+=self.amount_input.value()
-            if self.corrected_grades[row]>100:
-                self.corrected_grades[row] = 100
-            self.set_grades()
-            
+            self.corrected_grades[row] = min(
+                self.corrected_grades[row] + self.amount_input.value(), 100
+            )
+        self.set_grades()
 
     def load_grades(self):
         selected_file, _ = QFileDialog.getOpenFileName(
@@ -135,7 +144,16 @@ class GradesWindow(QMainWindow):
             self.grades_table.item(row, 2).setText(str(corrected_grade))
 
     def update_file(self) -> None:
-        pass
+        if not self.selected_file:
+            return
+
+        with open(self.selected_file,'w') as f:
+            f.write("ID,Grade\n")
+            for i in range(len(self.student_ids)):
+                f.write(f'{self.student_ids[i]},{self.corrected_grades[i]}\n')
+
+        if not QDesktopServices.openUrl(QUrl.fromLocalFile(self.selected_file)):
+            raise OSError(f"Could not open updated file: {self.selected_file}")
 
     def about(self) -> None:
         pass
