@@ -37,11 +37,22 @@ class AboutWindow(QWidget):
         self.email_label.setStyleSheet("color: white; font-size: 16px;")
 
         # 6. LinkedIn Label 
-        self.linkedin_label = QLabel('<a href="https://www.linkedin.com/in/barakzoref/" style="color: lightgreen; text-decoration: none; font-size: 15px;">🔗 LinkedIn Profile</a>', self)
+        self.linkedin_label = QLabel('<a href="https://www.linkedin.com/in/barakzoref/" style="color: lightgreen; text-decoration: none; font-size: 15px;">LinkedIn Profile</a>', self)
         self.linkedin_label.setGeometry(0, 360, 350, 30)
         self.linkedin_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.linkedin_label.setCursor(Qt.CursorShape.PointingHandCursor)
         self.linkedin_label.setOpenExternalLinks(True)
+
+        self.github_label = QLabel(
+            '<a href="https://github.com/BarakZoref/GradesProject" '
+            'style="color: lightgreen; text-decoration: none; font-size: 15px;">'
+            'GitHub Project</a>',
+            self,
+        )
+        self.github_label.setGeometry(0, 390, 350, 30)
+        self.github_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.github_label.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.github_label.setOpenExternalLinks(True)
 
 if __name__ == '__main__':
     app = QApplication()
