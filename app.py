@@ -16,6 +16,7 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+from About import AboutWindow
 
 
 class EnterAwareSpinBox(QSpinBox):
@@ -38,6 +39,7 @@ class GradesWindow(QMainWindow):
         self.original_grades = []
         self.corrected_grades = []
         self.selected_file = ''
+        self.about_window = AboutWindow()
 
         self.setWindowTitle("Grades")
 
@@ -156,7 +158,7 @@ class GradesWindow(QMainWindow):
             raise OSError(f"Could not open updated file: {self.selected_file}")
 
     def about(self) -> None:
-        pass
+        self.about_window.show()
 
 
 if __name__ == "__main__":
